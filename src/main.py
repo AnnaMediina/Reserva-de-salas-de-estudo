@@ -121,7 +121,6 @@ def main():
                     else:
                         print("Nenhuma sala disponível neste horário.")
 
-                # FAZER RESERVA
                 if acao == "2": 
 
                     numero_sala = input("Digite o número da sala que deseja reservar: ").strip().upper()
@@ -296,7 +295,26 @@ def main():
           2- Relatório Diário
           3- Sair""")
         op = input("Escolha uma opção: ")
-    
 
+    print("\n" + "=" * 60)
+    print("TESTANDO A VALIDAÇÃO (CHAIN OF RESPONSIBILITY)")
+    print("=" * 60)
+    
+    # Criando variáveis exclusivas para este teste rápido
+    teste_aluno = Aluno("Estudante Teste", "00000")
+    teste_prof = Professor("Professor Teste", "11111")
+    agora = datetime.now()
+    inicio_futuro = agora + timedelta(days=2)
+    fim_futuro = inicio_futuro + timedelta(hours=2)
+    inicio_pass = agora - timedelta(days=5)
+    fim_pass = inicio_pass + timedelta(hours=2)
+
+    print(f"Tentativa: {teste_aluno.nome} (Aluno) → Sala {lab1.numero_sala} (Laboratório)")
+    ReservaFactory.criar_reserva(teste_aluno, lab1, inicio_futuro, fim_futuro)
+
+    print(f"Tentativa: {teste_prof.nome} → Horário no passado ({inicio_pass.strftime('%d/%m/%Y')})")
+    ReservaFactory.criar_reserva(teste_prof, estudo1, inicio_pass, fim_pass)
+
+    # ===================================================
 if __name__ == "__main__":
     main()

@@ -4,6 +4,7 @@ from sala import Sala
 from reserva import Reserva
 from estrategia_reserva import PoliticaDeReserva, PoliticaPrimeiroChegar
 from gerenciador_reservas import GerenciadorDeReservas
+from validacao_reserva import ValidadorHorarioFuturo, ValidadorPermissaoLaboratorio
 
 class ReservaFactory:
     _politica_atual = PoliticaPrimeiroChegar()
@@ -14,14 +15,19 @@ class ReservaFactory:
 
     @classmethod
     def criar_reserva(cls, usuario: Usuario, sala: Sala, inicio: datetime, fim: datetime):
+        corrente = ValidadorHorarioFuturo()
+        corrente.definir_proximo(ValidadorPermissaoLaboratorio())
+        if not corrente.validar(usuario, sala, inicio, fim):
+            print("reserva cancelada na etapa de validação de regras.\n")
+            return None 
         tem_conflito = cls._politica_atual.verificar_conflito(sala, usuario, inicio, fim)
         
         if tem_conflito:
-            print(f"Falha ao criar reserva para {usuario.nome} devido a conflito de horário.")
+            print(f"Falha ao criar reserva para {usuario.nome} devido a conflito de horário.\n")
             return None
         nova_reserva = Reserva(usuario, sala, inicio, fim)
         GerenciadorDeReservas.get_instancia().adicionar_reserva(nova_reserva)
-        print(f" -> reserva criada com sucesso para {usuario.nome}.")
+        print(f"reserva criada com sucesso para {usuario.nome}.\n")
         return nova_reserva
     
     @classmethod
@@ -30,4 +36,4 @@ class ReservaFactory:
         if not tem_conflito:
             reserva.modificar_horario(novo_inicio, novo_fim)
         else:
-            print(f"Falha ao modificar reserva para {reserva.usuario.nome} devido a conflito de horário.")
+            print(f"falha ao modificar reserva para {reserva.usuario.nome} devido a conflito de horário.")
